@@ -33,6 +33,9 @@ function buildGroupBy(jsonql){
 }
 
 function buildSorters(jsonql){
+    if(!jsonql.sorters){
+        return ''
+    }
     let aSorters= [];
     jsonql.sorters.forEach(e=>{
         aSorters.push(
@@ -42,18 +45,31 @@ function buildSorters(jsonql){
     return `order by ${aSorters.join(',')}`;
 }
 
-
+function buildFilters(jsonql){
+    if(!jsonql.filters){
+        return ''
+    }
+    let aFilters= [];
+    jsonql.filters.forEach(e=>{
+        aFilters.push(
+            `"${e.table}"."${e.columnName}"  ${e.operator}  ${e.value}` 
+        )
+    });
+    return ` where ${aFilters.join(' and ')} `;
+}
 
 function JSON2HANASQL(jsonql){
     let columnString = buildColumnDefinition(jsonql);
     let fromString = buildFromTable(jsonql);
     let groupByString = buildGroupBy(jsonql);
     let sorterString = buildSorters(jsonql);
+    let filterString = buildFilters(jsonql);
+    
     return `
     select
         ${columnString}
         ${fromString}
-
+        ${filterString}
         ${groupByString}
         ${sorterString}
         limit ${jsonql.top}

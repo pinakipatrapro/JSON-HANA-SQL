@@ -1,6 +1,6 @@
 {
   "name": "json-hana-sql",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "JSON HANA SQL mapper for analytical queries",
   "main": "index.js",
   "scripts": {
