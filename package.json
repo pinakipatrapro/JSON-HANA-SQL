@@ -1,0 +1,27 @@
+{
+  "name": "json-hana-sql",
+  "version": "1.0.0",
+  "description": "JSON HANA SQL mapper for analytical queries",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pinakipatrapro/JSON-HANA-SQL.git"
+  },
+  "keywords": [
+    "hana",
+    "sql",
+    "json",
+    "sap",
+    "pinaki",
+    "patra"
+  ],
+  "author": "Pinaki Patra",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pinakipatrapro/JSON-HANA-SQL/issues"
+  },
+  "homepage": "https://github.com/pinakipatrapro/JSON-HANA-SQL#readme"
+}
