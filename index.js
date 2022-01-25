@@ -4,8 +4,9 @@ function buildColumnDefinition(jsonql){
 
     jsonql.table.forEach(e=>{
         e.column.forEach(f=>{
+            let columnName = `"${e.name}"."${f.name}"`
             aColumnDefinitions.push(
-                (f.groupOperator.length>0 ? `${f.groupOperator}("${f.name}")`:`"${f.name}"`)+
+                (f.groupOperator.length>0 ? `${f.groupOperator}(${columnName})`:`${columnName}`)+
                 ` as "${f.alias}"`
             )
         })
@@ -17,15 +18,25 @@ function buildColumnDefinition(jsonql){
 
 function buildFromTable(jsonql){
     let columnString= ` from "${jsonql.table[0].name}"`;
-    return columnString;
+    if(!jsonql.join){
+        return columnString;
+    }
+    let joinClauses = [];
+    jsonql.join.forEach(e=>{
+        joinClauses.push(` ${e.joinType}  "${e.toTable}" on 
+            "${e.fromTable}"."${e.fromColumn}" = "${e.toTable}"."${e.toColumn}"
+        ` )
+    })
+    return `${columnString}  ${joinClauses.join (' ')}`;
 }
 
 function buildGroupBy(jsonql){
     let aGroupBy= [];
     jsonql.table.forEach(e=>{
         e.column.forEach(f=>{
+            let columnName = `"${e.name}"."${f.name}"`
             if(!f.groupOperator.length){
-                aGroupBy.push(`"${f.name}"`)
+                aGroupBy.push(`${columnName}`)
             }
         })
     });
@@ -59,6 +70,10 @@ function buildFilters(jsonql){
 }
 
 function JSON2HANASQL(jsonql){
+
+    jsonql.top = jsonql.top || 99999;
+    jsonql.skip = jsonql.skip || 0;
+
     let columnString = buildColumnDefinition(jsonql);
     let fromString = buildFromTable(jsonql);
     let groupByString = buildGroupBy(jsonql);
@@ -72,8 +87,8 @@ function JSON2HANASQL(jsonql){
         ${filterString}
         ${groupByString}
         ${sorterString}
-        limit ${jsonql.top}
-    `;
+        limit ${jsonql.top} offset ${jsonql.skip}
+    ;`;
 }
 
 module.exports=JSON2HANASQL
