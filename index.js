@@ -56,17 +56,27 @@ function buildSorters(jsonql){
     return `order by ${aSorters.join(',')}`;
 }
 
-function buildFilters(jsonql){
-    if(!jsonql.filters){
-        return ''
+function buildFilters(jsonql) {
+    if (!jsonql.filters) {
+        return '';
     }
-    let aFilters= [];
-    jsonql.filters.forEach(e=>{
-        aFilters.push(
-            `"${e.table}"."${e.columnName}"  ${e.operator}  ${e.value}` 
-        )
+    let filtersByColumn = {};
+    jsonql.filters.forEach(e => {
+        if (!filtersByColumn[e.columnName]) {
+            filtersByColumn[e.columnName] = [];
+        }
+        filtersByColumn[e.columnName].push(`"${e.table}"."${e.columnName}" ${e.operator} ${e.value}`);
     });
-    return ` where ${aFilters.join(' and ')} `;
+
+    let aFilters = [];
+    for (let columnName in filtersByColumn) {
+        if (filtersByColumn[columnName].length > 1) {
+            aFilters.push(`(${filtersByColumn[columnName].join(' or ')})`);
+        } else {
+            aFilters.push(filtersByColumn[columnName][0]);
+        }
+    }
+    return `where ${aFilters.join(' and ')}`;
 }
 
 function JSON2HANASQL(jsonql){
